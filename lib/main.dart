@@ -49,36 +49,75 @@ class _PortfolioHomeState extends State<PortfolioHome> {
         backgroundColor: const Color(0xFF442B04),
         title: Row(
           children: [
-            const Text(
-              "ऐक्यम युनिटी फाउंडेशन",
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            const SizedBox(width: 8),
             Image.asset(
-              "assets/images/logo.png", // 🔹 Your logo image path
-              height: 40, // adjust size
+              "assets/images/logo.png",
+              height: 40,
             ),
             const SizedBox(width: 8),
-          ],
-        ),
-        actions: [
-          for (String page in pages.keys)
-            TextButton(
-              onPressed: () => setState(() => currentPage = page),
+            const Flexible(
               child: Text(
-                page,
+                "ऐक्यम युनिटी फाउंडेशन",
                 style: TextStyle(
-                  color: currentPage == page
-                      ? const Color.fromARGB(255, 246, 246, 103)
-                      : Colors.white,
-                  fontWeight:
-                      currentPage == page ? FontWeight.bold : FontWeight.normal,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 18,
                 ),
+                overflow:
+                    TextOverflow.ellipsis, // prevent overflow on small screens
               ),
             ),
-        ],
+          ],
+        ),
+        actions: MediaQuery.of(context).size.width > 700
+            ? [
+                // ✅ Show menu only on desktop/tablet
+                for (String page in pages.keys)
+                  TextButton(
+                    onPressed: () => setState(() => currentPage = page),
+                    child: Text(
+                      page,
+                      style: TextStyle(
+                        color: currentPage == page
+                            ? const Color.fromARGB(255, 246, 246, 103)
+                            : Colors.white,
+                        fontWeight: currentPage == page
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+              ]
+            : null, // ✅ Hide actions on mobile
       ),
+      drawer: MediaQuery.of(context).size.width <= 700
+          ? Drawer(
+              // ✅ Show drawer only on mobile
+              child: ListView(
+                children: [
+                  const DrawerHeader(
+                    decoration: BoxDecoration(color: Color(0xFF442B04)),
+                    child: Text(
+                      "ऐक्यम युनिटी फाउंडेशन",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  for (String page in pages.keys)
+                    ListTile(
+                      title: Text(page),
+                      selected: currentPage == page,
+                      onTap: () {
+                        setState(() => currentPage = page);
+                        Navigator.pop(context); // close drawer
+                      },
+                    ),
+                ],
+              ),
+            )
+          : null,
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         child: pages[currentPage],
